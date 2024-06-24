@@ -51,6 +51,18 @@ func (db *Db) Set(key []byte, val []byte, ttl time.Duration) error {
 	return err
 }
 
+func (db *Db) Delete(key []byte) error {
+	err := db.Db.Update(func(txn *badger.Txn) error {
+		err := txn.Delete(key)
+		if err != nil {
+			log.Printf("Badger error: %s", err)
+			return err
+		}
+		return nil
+	})
+	return err
+}
+
 func (db *Db) Iterator() {
 	err := db.Db.View(func(txn *badger.Txn) error {
 		it := txn.NewIterator(badger.DefaultIteratorOptions)
